@@ -3,6 +3,7 @@
 use App\Http\Controllers\CentroCompraController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProjectsController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -62,10 +63,8 @@ Route::middleware('auth', 'verified')->group(function () {
 
     Route::resource('/permission', PermissionController::class)->except('create', 'show', 'edit');
     Route::post('/permission/destroy-bulk', [PermissionController::class, 'destroyBulk'])->name('permission.destroy-bulk');
-
-    Route::resource('/reportes', ReporteController::class);
-
-    Route::resource('/centrocompra', CentroCompraController::class);
+    
+    Route::resource('/projects', ProjectsController::class);
 });
 
 require __DIR__.'/auth.php';

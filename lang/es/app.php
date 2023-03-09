@@ -2,6 +2,8 @@
 
 return [
     'label' => [
+        'projects' => 'Proyecto',
+
         'Report' => 'Reporte',
         'reporte' => 'Reporte',
         'CentroCompra' => 'Centros de Compra',

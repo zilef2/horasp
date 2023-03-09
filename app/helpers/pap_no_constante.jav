@@ -9,6 +9,16 @@
         composer global require laravel/installer
         composer require laravel/jetstream
         composer install && npm install
+
+
+        //probando (aun no se deberian poner en todos los proyectos)
+            //composer
+                 composer require mrdebug/crudgen --dev
+
+            //para livewire
+                composer require laravelcollective/html
+                    npm install --save-dev @defstudio/vite-livewire-plugin
+                    php artisan vendor:publish --provider="Mrdebug\Crudgen\CrudgenServiceProvider"
     //fin  install laravel
     //?helps
         //memory limit
@@ -17,7 +27,6 @@
         //composer
         composer global require laravel/installer
         composer require laravel/jetstream
-
 
         
     //? heramientas

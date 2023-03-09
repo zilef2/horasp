@@ -7,7 +7,7 @@ import { useForm } from '@inertiajs/vue3';
 const props = defineProps({
     show: Boolean,
     title: String,
-    permission: Object,
+    role: Object,
 })
 
 const emit = defineEmits(["close"]);
@@ -15,7 +15,7 @@ const emit = defineEmits(["close"]);
 const form = useForm({});
 
 const destory = () => {
-    form.delete(route('permission.destroy', props.permission?.id), {
+    form.delete(route('role.destroy', props.role?.id), {
         preserveScroll: true,
         onSuccess: () => {
             emit("close")
@@ -36,7 +36,7 @@ const destory = () => {
                     {{ lang().label.delete }} {{ props.title }}
                 </h2>
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    {{ lang().label.delete_confirm }} <b>{{ props.permission?.name }}</b>?
+                    {{ lang().label.delete_confirm }} <b>{{ props.role?.name }}</b>?
                 </p>
                 <div class="mt-6 flex justify-end">
                     <SecondaryButton :disabled="form.processing" @click="emit('close')"> {{ lang().button.close }}

@@ -18,7 +18,7 @@ class CentroCompraController extends Controller
      */
     public function index(Request $request)
     {
-        $centrocompras = CentroCompra::query();
+        $centrocompras = CentroCompra::query();//seeder, factory, controller
         if ($request->has('search')) {
             $centrocompras->orWhere('nombre', 'LIKE', "%" . $request->search . "%");
         }

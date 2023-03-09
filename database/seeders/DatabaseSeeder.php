@@ -24,8 +24,8 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
-            CentroCompraSeeder::class,
-                ReporteSeeder::class, //(centro_compra_id)
+            ProjectSeeder::class,
+            // CentroCompraSeeder::class,
         ]);
     }
 }
