@@ -5,6 +5,8 @@ import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import DatetimeInput from '@/Components/DatetimeInput.vue';
+
 import { useForm } from '@inertiajs/vue3';
 import { watchEffect, reactive } from 'vue';
 import Checkbox from '@/Components/Checkbox.vue';
@@ -12,8 +14,7 @@ import Checkbox from '@/Components/Checkbox.vue';
 const props = defineProps({
     show: Boolean,
     title: String,
-    role: Object,
-    permissions: Object,
+    project: Object,
 })
 
 const data = reactive({
@@ -22,13 +23,49 @@ const data = reactive({
 
 const emit = defineEmits(["close"]);
 
+const today = new Date();
+function isDate(variable) {
+  return Object.prototype.toString.call(variable) === '[object Date]';
+}
+function fechaInInput(dateit,addDays=0,addMonths=0){
+    if(isDate(dateit)){
+
+        let mesConCero = addMonths == 0 ? (dateit.getMonth()+1) : (dateit.getMonth()+1+addMonths);
+        let diaConCero = addDays == 0 ? (dateit.getDay()) : (dateit.getDay()+addDays);
+        if(mesConCero < 10) mesConCero = '0'+mesConCero;
+        if(diaConCero < 10) diaConCero = '0'+diaConCero;
+        return (dateit.getFullYear())+"-"+(mesConCero)+'-'+(diaConCero);
+    }
+    return '2023-03-03'; // TODO: turn DATE => string
+} 
+
 const form = useForm({
-    name: '',
-    permissions: [],
+    nombre: '',
+    cliente: '',
+    valor_tentativo: '',
+    valor_acordado: '',
+    valor_primer_pago: '',
+    fecha_primera_reunion: '',
+    fecha_primer_pago: '',
+    fecha_entrega: '',
 });
 
+const printForm = [
+    // {label: 'nombre', type:'text', value:form.nombre},
+    {idd: 'nombre',label: 'nombre', type:'text', value:form.nombre},
+    {idd: 'cliente',label: 'cliente', type:'text', value:form.cliente},
+    {idd: 'valor_tentativo',label: 'valor tentativo', type:'number', value:''+form.valor_tentativo},
+    {idd: 'valor_acordado',label: 'valor acordado', type:'number', value:''+form.valor_acordado},
+    {idd: 'valor_primer_pago',label: 'valor primer pago', type:'number', value:''+form.valor_primer_pago},
+];
+const printFormDate = [
+    {idd: 'fecha_primera_reunion',label: 'fecha primera reunion', type:'date', value:(form.fecha_primera_reunion)},
+    {idd: 'fecha_primer_pago',label: 'fecha primer pago', type:'date', value:(form.fecha_primer_pago)},
+    {idd: 'fecha_entrega',label: 'fecha entrega', type:'date', value:(form.fecha_entrega)},
+];
+
 const update = () => {
-    form.put(route('role.update', props.role?.id), {
+    form.put(route('projects.update', props.project?.id), {
         preserveScroll: true,
         onSuccess: () => {
             emit("close")
@@ -43,34 +80,17 @@ const update = () => {
 watchEffect(() => {
     if (props.show) {
         form.errors = {}
-        form.name = props.role?.name
-        form.permissions = props.role.permissions?.map((d) => d.id);
-    }
-    if (props.permissions.length == props.role?.permissions.length) {
-        data.multipleSelect = true
-    } else {
-        data.multipleSelect = false
+        form.nombre = props.project?.nombre
+        form.cliente = props.project?.cliente
+        form.valor_tentativo = ''+props.project?.valor_tentativo
+        form.valor_acordado = ''+props.project?.valor_acordado
+        form.valor_primer_pago = ''+props.project?.valor_primer_pago
+        form.fecha_primera_reunion = '2023-04-04'
+        form.fecha_primer_pago = fechaInInput(props.project?.fecha_primer_pago)
+        form.fecha_entrega = fechaInInput(props.project?.fecha_entrega)
     }
 })
-
-const selectAll = (event) => {
-    if (event.target.checked === false) {
-        form.permissions = []
-    } else {
-        form.permissions = []
-        props.permissions.forEach((permission) => {
-            form.permissions.push(permission.id)
-        })
-    }
-}
-const select = () => {
-    if (props.permissions.length == form.permissions.length) {
-        data.multipleSelect = true
-    } else {
-        data.multipleSelect = false
-    }
-}
-
+console.log("🚀 ~ file: Edit.vue:89 ~ watchEffect ~ form.fecha_primera_reunion:", form.fecha_primera_reunion)
 </script>
 
 <template>
@@ -80,30 +100,18 @@ const select = () => {
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                     {{ lang().label.edit }} {{ props.title }}
                 </h2>
-                <div class="my-6 space-y-4">
-                    <div>
-                        <InputLabel for="name" :value="lang().label.role" />
-                        <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required
-                            :placeholder="lang().placeholder.name" :error="form.errors.name" />
-                        <InputError class="mt-2" :message="form.errors.name" />
+                <div class="my-6 grid grid-cols-2 gap-6">
+                    <div v-for="(atributosform, indice) in printForm" :key="indice">
+                        <InputLabel :for="atributosform.label" :value="atributosform.value" />
+                        <TextInput :id="atributosform.idd" :type="atributosform.type" class="mt-1 block w-full"
+                            v-model="form[atributosform.idd]" required
+                            :placeholder="atributosform.label" :error="form.errors[atributosform.idd]" />
                     </div>
-                    <div>
-                        <InputLabel :value="lang().label.permission" />
-                        <InputError class="mt-2" :message="form.errors.permissions" />
-                        <div class="flex justify-start items-center space-x-2 mt-2">
-                            <Checkbox id="permission-all" v-model:checked="data.multipleSelect" @change="selectAll" />
-                            <InputLabel for="permission-all" :value="lang().label.check_all" />
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-2">
-                            <div class="flex items-center justify-start space-x-2"
-                                v-for="(permission, index) in props.permissions" :key="index">
-                                <input @change="select"
-                                    class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-primary dark:text-primary shadow-sm focus:ring-primary/80 dark:focus:ring-primary dark:focus:ring-offset-gray-800 dark:checked:bg-primary dark:checked:border-primary"
-                                    type="checkbox" :id="'permission_' + permission.id" :value="permission.id"
-                                    v-model="form.permissions" />
-                                <InputLabel :for="'permission_' + permission.id" :value="permission.name" />
-                            </div>
-                        </div>
+                    <div v-for="(atributosformDate, indice) in printFormDate" :key="indice">
+                        <InputLabel :for="atributosformDate.idd" :value="atributosformDate.label" />
+                        <DatetimeInput :id="atributosformDate.idd" :type="atributosformDate.type" class="mt-1 block w-full"
+                            v-model="form[atributosformDate.idd]" required
+                            :placeholder="atributosformDate.label" :error="form.errors[atributosformDate.idd]" />
                     </div>
                 </div>
                 <div class="flex justify-end">

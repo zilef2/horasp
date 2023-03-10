@@ -4,10 +4,10 @@ import { onMounted, ref } from 'vue';
 defineProps({
     modelValue: String,
     error: {
-        type: String,
+        type: Date,
         default: null,
     },
-});
+})
 
 defineEmits(['update:modelValue']);
 
